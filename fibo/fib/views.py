@@ -5,12 +5,21 @@ from fib.models import FibonacciSums
 # Create your views here.
 def fib(request,number):
     number = int(number)
-
     F = FibonacciSums(number)
-    res = '<br>'.join([str(x) for x in F.adjust_result(F.get_fibo_sums())])
-    
+    #res = '<br>'.join([str(x) for x in F.adjust_result(F.get_fibo_sums())])
+    sums = F.get_fibo_sums()
+    F.adjust_result(sums)
+    res = F.__repr__('<br>',' + ')
+    F.save_to_db()
     return HttpResponse(str(res))
 
+
 def index(request):
-    message = "Adnymics test task 2"
+    message = "Go to "
     return HttpResponse(message)
+
+
+def fib_ask(request):
+    message = "<h3>Go to fib/number in the address bar to get all combinations of Fibonacci numbers that add up to number</h3>"
+    return HttpResponse(message)
+

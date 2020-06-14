@@ -80,6 +80,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'fibo.wsgi.application'
 
+#Cache
+CACHES = {
+   'default': {
+      'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+   }
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

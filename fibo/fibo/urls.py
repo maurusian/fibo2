@@ -21,7 +21,6 @@ from fib import views, urls
 
 urlpatterns = [
     path('',views.index),
-    #path(r'my_app/',include(urls)),
     path('fib/',include(urls)),
     path('health/',include('health_check.urls')),
     path('admin/', admin.site.urls),

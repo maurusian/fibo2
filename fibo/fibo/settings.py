@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'fib.apps.FibConfig',
+    'health.apps.HealthConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
+    'health_check',                             # required
+    'health_check.db',                          # stock Django health checkers
+    'health_check.cache',
+    'health_check.storage',
+    'health_check.contrib.psutil',              # disk and memory utilization; requires psutil
+    'health_check.contrib.s3boto_storage',      # requires boto and S3BotoStorage backend
+    
 ]
 
 MIDDLEWARE = [

@@ -15,20 +15,20 @@ Including another URLconf
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import include, path
-from health import urls as uh
+from django.urls import include, path, re_path
+#from health import urls as uh
 from fib import views, urls
 
 urlpatterns = [
     path('',views.index),
     #path(r'my_app/',include(urls)),
-    path(r'fib/',include(urls)),
-    path(r'health/',include(uh)),
+    path('fib/',include(urls)),
+    path('health/',include('health_check.urls')),
     path('admin/', admin.site.urls),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
-        path(r'^__debug__/',include(debug_toolbar.urls)),
+        re_path(r'^__debug__/',include(debug_toolbar.urls)),
         ] + urlpatterns

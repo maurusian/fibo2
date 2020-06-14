@@ -81,11 +81,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'fibo.wsgi.application'
 
 #Cache
-"""
+
+
 CACHES = {
    'default': {
       'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+      'LOCATION': 'fib_cachetable',
    }
+}
+"""
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        
+    }
 }
 """
 

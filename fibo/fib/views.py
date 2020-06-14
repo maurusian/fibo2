@@ -5,16 +5,17 @@ from fib.models import FibonacciSums
 # Create your views here.
 def fib(request,number):
     number = int(number)
- 
+    F = FibonacciSums(number)
     #res = '<br>'.join([str(x) for x in F.adjust_result(F.get_fibo_sums())])
-    res = FibonacciSums(number).__repr__('<br>',' + ')
-    
+    sums = F.get_fibo_sums()
+    F.adjust_result(sums)
+    res = F.__repr__('<br>',' + ')
+    F.save_to_db()
     return HttpResponse(str(res))
 
 
 def index(request):
     message = "This app is powered by Fibonacci sequences"
-                
     return HttpResponse(message)
 
 

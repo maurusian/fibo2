@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'health_check.cache',
     'health_check.storage',
     'health_check.contrib.psutil',              # disk and memory utilization; requires psutil
-    'health_check.contrib.s3boto_storage',      # requires boto and S3BotoStorage backend
+    #'health_check.contrib.s3boto_storage',      # requires boto and S3BotoStorage backend
     
 ]
 
@@ -81,11 +81,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'fibo.wsgi.application'
 
 #Cache
+"""
 CACHES = {
    'default': {
       'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
    }
 }
+"""
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

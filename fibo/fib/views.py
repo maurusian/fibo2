@@ -1,9 +1,11 @@
 #from django.shortcuts import render
 from django.http import HttpResponse
 from fib.models import FibonacciSums
+import time
 
 # Create your views here.
 def fib(request,number):
+    start = time.time()
     number = int(number)
     F = FibonacciSums(number)
     #res = '<br>'.join([str(x) for x in F.adjust_result(F.get_fibo_sums())])
@@ -18,6 +20,11 @@ def fib(request,number):
     res+= '</ul>'
     
     F.save_to_db()
+    
+    total = time.time() - start
+    
+    res = 'Elapsed time: '+"{:.2f}".format(total)+' second<br><br>'+res
+    
     return HttpResponse(str(res))
 
 

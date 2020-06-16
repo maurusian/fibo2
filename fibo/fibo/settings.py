@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'health_check.storage',
     'health_check.contrib.psutil',              # disk and memory utilization; requires psutil
     #'health_check.contrib.s3boto_storage',      # requires boto and S3BotoStorage backend
+    'crispy_forms',
     
 ]
 
@@ -61,6 +62,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'fibo.urls'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 TEMPLATES = [
     {

@@ -8,8 +8,15 @@ def fib(request,number):
     F = FibonacciSums(number)
     #res = '<br>'.join([str(x) for x in F.adjust_result(F.get_fibo_sums())])
     sums = F.get_fibo_sums()
-    F.adjust_result(sums)
-    res = F.__repr__('<br>',' + ')
+    sums = F.adjust_result(sums)
+    #res = F.__repr__('<br>',' + ')
+    
+    res = '<ul class="list-group">'
+    for fibo_sum in sums:
+        res+= '<li class="list-group-item">'+' + '.join([str(n) for n in fibo_sum])+'</li>'
+
+    res+= '</ul>'
+    
     F.save_to_db()
     return HttpResponse(str(res))
 

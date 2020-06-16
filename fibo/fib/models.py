@@ -199,7 +199,7 @@ class FibonacciSums():
         divided by 2. Going beyond is pointless, since
         the sum combinations are calculated from smallest
         to largest. A Fibonacci number that exceeds half
-        of self.number has only once chance to be part of
+        of self.number has only one chance to be part of
         a sum combination, which is that it is equal to
         self.number. This special case is treated at the
         end.
@@ -242,9 +242,11 @@ class FibonacciSums():
             if self.number - self.fibo_sequence[i] >= self.fibo_sequence[i]:
                 self.sums += self.append_to_all([self.fibo_sequence[i]],FibonacciSums(self.number-self.fibo_sequence[i]).get_fibo_sums())
 
-                        
+            """
+            #It looks like backtracking is not needed
             else:
                 del self.sums[-1][-1]
+            """
             i+=1   
 
         if self.number in self.fibo_sequence:
@@ -299,9 +301,14 @@ class FibonacciSums():
         of the longest list in self.sums, which
         is used to sort the lists by priority, first
         value first, second value second, and so on.
+
+        Edit:
+        get_max_val(res) repalced with self.number,
+        since the later is always larger than any
+        Fibonacci values.
         """
         max_len = self.get_max_len(res)
-        self.sums = sorted([x for x in set((tuple(x) for x in res))],key=lambda x:(tuple(self.sorting_rule(x,i,self.get_max_val(res)) for i in range(max_len))))
+        self.sums = sorted([x for x in set((tuple(x) for x in res))],key=lambda x:(tuple(self.sorting_rule(x,i,self.number) for i in range(max_len))))
         return self.sums
 
     def save_to_db(self):

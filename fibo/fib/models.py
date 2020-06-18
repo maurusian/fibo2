@@ -1,5 +1,6 @@
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+import ast
 
 # Create your models here.
 
@@ -35,6 +36,9 @@ class NumbersAndSums(models.Model):
         try:
             ns = NumbersAndSums.objects.get(target_num = number)
         except ObjectDoesNotExist:
+            ns = None
+        except MultipleObjectsReturned:
+            NumbersAndSums.objects.filter(target_num = number).delete()
             ns = None
         return ns
 
@@ -137,6 +141,31 @@ class FibonacciSums():
         as number separator.
         """
         return outer_separator.join([inner_separator.join(str(n) for n in fibo_sum) for fibo_sum in self.sums])
+
+    def __str__(self):
+        """
+        Returns a string where sums are separated by
+        ';', and numbers of each sum are separated by
+        ','.
+        """
+        #return ';'.join([','.join(str(n) for n in fibo_sum) for fibo_sum in self.sums])
+        return str(self.sums)
+
+    def __repr__(self):
+        return str(self)
+
+    def convert_list_to_dict(self,lis):
+        dd = {}
+        i  = 0
+        c  = 0
+        #keys = []
+        while i<len(lis):
+            if lis[i] not in dd.keys():
+                c = lis.count(lis[i])
+                dd[lis[i]] = c
+                i+=c-1
+            i+=1
+        return dd
  
     def get_fibo_sequence(self):
         """
@@ -287,6 +316,99 @@ class FibonacciSums():
         self.save_to_db()
         return self.sums
 
+    def remove_duplicates(self):
+        tmp = list(set([tuple(sorted(d.items(),key = lambda x:x[0])) for d in self.sums]))
+        return [dict((x, y) for x, y in t) for t in tmp]
+
+    def append_to_dict_list(self,elem,dd_list):
+        for dd in dd_list:
+            if elem in dd.keys():
+                dd[elem]+=1
+            else:
+                dd[elem]=1
+        return dd_list
+
+    def get_fibo_sums2(self):
+        """
+        Main functionality of the app. Returns a list
+        of dictionaries consisting of Fibonacci
+        decompositions of self.number.
+        
+        Calls itself recursively to break down the
+        problem into the simpler tasks of calculating
+        the same thing for smaller numbers, then
+        combining the sums.
+        
+        Checks trivial cases first.
+        
+        Calls the sums from the database with self.number
+        as the key. If the call fails (the number is
+        being calculated for the first time, or its row
+        had been deleted), the sum combinations are
+        simply recalculated.
+
+        Calculation:
+        
+        The function gets the Fibonacci sequence up to
+        self.number, then iterates over this sequence
+        starting with the smallest (2) up to self.number
+        divided by 2. Going beyond is pointless, since
+        the sum combinations are calculated from smallest
+        to largest. A Fibonacci number that exceeds half
+        of self.number has only one chance to be part of
+        a sum combination, which is that it is equal to
+        self.number. This special case is treated at the
+        end.
+
+        The function breaks down the problem into solving
+        it for self.number minus the current Fibonacci
+        number in self.fibo_sequence. This number is
+        automatically appended to the solutions of the
+        new problem. This will be the case if the difference
+        is larger than or equal to the current Fibonacci
+        number in the sequence.
+
+        If the difference is smaller, then we backtrack
+        and try another Fibonacci number.
+
+        Once out of the loop, the function then checks if
+        self.number is not itself a Fibonacci number, and
+        adds the singleton [self.number] to the list of
+        sums in that case.
+
+        It then saves the number and combinations in the
+        database for future use.
+        """
+        if self.number == 0 or self.number == 1:
+            return [{}]
+        if self.number==2:
+            return [{2:1}]
+        if self.number==3:
+            return [{3:1}]
+
+        
+        ns = NumbersAndSums.get_object_by_target_num(self.number)
+
+        if ns is not None:
+            #return [[int(n) for n in fibo_sum.split(',')] for fibo_sum in ns.fibo_sums.split(';')]
+            return ast.literal_eval(ns.fibo_sums)
+        
+        self.fibo_sequence = self.get_fibo_sequence()
+        i = 0
+        self.sums = []
+        while self.fibo_sequence[i]<=self.number//2:
+            if self.number - self.fibo_sequence[i] >= self.fibo_sequence[i]:
+                self.sums += self.append_to_dict_list(self.fibo_sequence[i],FibonacciSums(self.number-self.fibo_sequence[i]).get_fibo_sums2())
+
+            
+            i+=1   
+
+        if self.number in self.fibo_sequence:
+            self.sums.append({self.number:1})
+        #self.sums = self.remove_duplicates()   #remove any duplicates
+        self.save_to_db()
+        return self.sums
+
     def sorting_rule(self,sum_seq,i,max_val):
         """
         Returns a number that will be used as
@@ -352,11 +474,6 @@ class FibonacciSums():
         ns = NumbersAndSums.get_object_by_target_num(self.number)
 
         if ns is None:
-            ns = NumbersAndSums(target_num = self.number,fibo_sums = self.__repr__(';',','))
+            ns = NumbersAndSums(target_num = self.number,fibo_sums = str(self))
             ns.save()
 
-
-
-if __name__ == '__main__':
-    F = FibonacciSums(14)
-    print(F.adjust_result(F.get_fibo_sums()))

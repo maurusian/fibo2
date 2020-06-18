@@ -9,7 +9,7 @@ FIBO_1 = 3
 class NumbersAndSums(models.Model):
     """
     Class that handles communication between the model
-    and its corresponding database table fibo_NumbersAndSums
+    and its corresponding database table fib_NumbersAndSums
     in the fibo database.
 
     Attributes:
@@ -41,7 +41,7 @@ class NumbersAndSums(models.Model):
 class FiboSequence(models.Model):
     """
     Class that handles communication between the model
-    and its corresponding database table fibo_FiboSequence
+    and its corresponding database table fib_FiboSequence
     in the fibo database. This table can contain one and
     only one row, corresponding to the longest Fibonacci
     sequence that has been calculated so far.
@@ -69,7 +69,39 @@ class FiboSequence(models.Model):
         except ObjectDoesNotExist:
             fs = None
 
-        return fs    
+        return fs
+
+class RequestResponse(models.Model):
+    """
+    Class that handles communication between the model
+    and its corresponding database table fib_RequestResponse
+    in the fibo database.
+
+    Attributes:
+    - target_num: an integer value denoting the number
+    whose Fibonacci decompositions are to be or have
+    been calculated.
+    - fibo_sums: a string value containing a complete
+    list of Fibonacci decompositions for target_num
+    separated by ; where each number is separated by ,
+    """
+    request_path = models.TextField()
+    response_html = models.TextField()
+
+    @staticmethod
+    def get_object_by_request_path(request_path):
+        """
+        Static method that gets the object by
+        request_path. If the object doesn't
+        exist in the database (its row
+        representation that is), it returns
+        None.
+        """
+        try:
+            rr = RequestResponse.objects.get(request_path = request_path)
+        except ObjectDoesNotExist:
+            rr = None
+        return rr
 
 
 class FibonacciSums():

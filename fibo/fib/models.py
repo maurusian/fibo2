@@ -2,8 +2,6 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 import ast
 
-# Create your models here.
-
 FIBO_0 = 2
 FIBO_1 = 3
 
@@ -316,9 +314,27 @@ class FibonacciSums():
         self.save_to_db()
         return self.sums
 
+    def eq(self,i,j):
+        return (list(self.sums[i].keys())==list(self.sums[j].keys())) and (list(self.sums[i].values())==list(self.sums[j].values()))
+
     def remove_duplicates(self):
-        tmp = list(set([tuple(sorted(d.items(),key = lambda x:x[0])) for d in self.sums]))
-        return [dict((x, y) for x, y in t) for t in tmp]
+        #tmp = list(set([tuple(sorted(d.items(),key = lambda x:x[0])) for d in self.sums]))
+        #return [dict((x, y) for x, y in t) for t in tmp]
+        for i in range(len(self.sums)):
+            self.sums[i] = {k:self.sums[i][k] for k in sorted(self.sums[i].keys())}
+        i = 0
+        l = len(self.sums)
+        while i < l-1:
+            j = i+1
+            while j < l:
+                if self.eq(i,j):
+                    del self.sums[j]
+                    l-=1
+                else:
+                    j+=1
+            i+=1
+        return self.sums
+                
 
     def append_to_dict_list(self,elem,dd_list):
         for dd in dd_list:
@@ -391,7 +407,8 @@ class FibonacciSums():
 
         if ns is not None:
             #return [[int(n) for n in fibo_sum.split(',')] for fibo_sum in ns.fibo_sums.split(';')]
-            return ast.literal_eval(ns.fibo_sums)
+            self.sums = ast.literal_eval(ns.fibo_sums)
+            return self.sums
         
         self.fibo_sequence = self.get_fibo_sequence()
         i = 0
@@ -405,7 +422,7 @@ class FibonacciSums():
 
         if self.number in self.fibo_sequence:
             self.sums.append({self.number:1})
-        #self.sums = self.remove_duplicates()   #remove any duplicates
+        self.sums = self.remove_duplicates()   #remove any duplicates
         self.save_to_db()
         return self.sums
 
@@ -429,6 +446,19 @@ class FibonacciSums():
             return max_val
         else:
             return sum_seq[i]
+
+    def sorting_rule2(self,dd,key):
+        if key not in dd.keys():
+            return (key,self.number)
+        else:
+            return (key,0-dd[key])
+
+    def get_max_len2():
+        pass
+    def adjust_result2(self):
+        self.sums = sorted(self.sums,key=lambda x:(tuple(self.sorting_rule2(x,key) for key in self.fibo_sequence)))
+        return self.sums
+
 
     def get_max_len(self,res):
         """

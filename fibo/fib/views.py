@@ -19,7 +19,7 @@ def fib(request,number):
         number = int(number)
         F = FibonacciSums(number)
         sums = F.get_fibo_sums2()
-        sums = F.adjust_result2()
+        sums = F.sort()
         
         res = '<ul class="list-group">'
         for fibo_sum in sums:

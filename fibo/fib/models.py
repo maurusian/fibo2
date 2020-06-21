@@ -151,19 +151,6 @@ class FibonacciSums():
 
     def __repr__(self):
         return str(self)
-
-    def convert_list_to_dict(self,lis):
-        dd = {}
-        i  = 0
-        c  = 0
-        #keys = []
-        while i<len(lis):
-            if lis[i] not in dd.keys():
-                c = lis.count(lis[i])
-                dd[lis[i]] = c
-                i+=c-1
-            i+=1
-        return dd
  
     def get_fibo_sequence(self):
         """
@@ -219,6 +206,7 @@ class FibonacciSums():
 
     def append_to_all(self,lis,list_of_lists):
         """
+        OUTDATED, FROM V0.1 ---
         Returns a list of lists whereby a simple
         list (lis) is concatenated with every
         list member of list_of_lists.
@@ -233,6 +221,7 @@ class FibonacciSums():
 
     def get_fibo_sums(self):
         """
+        OUTDATED, FROM V0.1 ---
         Main functionality of the app. Returns a list
         of lists consisting of Fibonacci decompositions
         of self.number.
@@ -257,11 +246,8 @@ class FibonacciSums():
         starting with the smallest (2) up to self.number
         divided by 2. Going beyond is pointless, since
         the sum combinations are calculated from smallest
-        to largest. A Fibonacci number that exceeds half
-        of self.number has only one chance to be part of
-        a sum combination, which is that it is equal to
-        self.number. This special case is treated at the
-        end.
+        to largest. The special case of self.number being
+        a Fibonacci number itself is treated at the end.
 
         The function breaks down the problem into solving
         it for self.number minus the current Fibonacci
@@ -292,7 +278,8 @@ class FibonacciSums():
         ns = NumbersAndSums.get_object_by_target_num(self.number)
 
         if ns is not None:
-            return [[int(n) for n in fibo_sum.split(',')] for fibo_sum in ns.fibo_sums.split(';')]
+            self.sums = [[int(n) for n in fibo_sum.split(',')] for fibo_sum in ns.fibo_sums.split(';')]
+            return self.sums
 
         self.fibo_sequence = self.get_fibo_sequence()
         i = 0
@@ -315,9 +302,19 @@ class FibonacciSums():
         return self.sums
 
     def eq(self,i,j):
+        """
+        Compares two dictionary elements at indexes
+        i and j of self.sums
+        """
         return (list(self.sums[i].keys())==list(self.sums[j].keys())) and (list(self.sums[i].values())==list(self.sums[j].values()))
 
     def remove_duplicates(self):
+        """
+        Removes duplicate dictionaries from
+        self.sums. Starts by sorting the keys
+        and values in each dictionary.
+        Uses eq function for comparison.
+        """
         #tmp = list(set([tuple(sorted(d.items(),key = lambda x:x[0])) for d in self.sums]))
         #return [dict((x, y) for x, y in t) for t in tmp]
         for i in range(len(self.sums)):
@@ -337,6 +334,13 @@ class FibonacciSums():
                 
 
     def append_to_dict_list(self,elem,dd_list):
+        """
+        Adds an element elem to each dictionary in
+        a list of dictionaries.
+        If elem is in a given dictionary, its value
+        is incremented by 1. If not, it is added
+        with a value = 1.
+        """
         for dd in dd_list:
             if elem in dd.keys():
                 dd[elem]+=1
@@ -370,11 +374,8 @@ class FibonacciSums():
         starting with the smallest (2) up to self.number
         divided by 2. Going beyond is pointless, since
         the sum combinations are calculated from smallest
-        to largest. A Fibonacci number that exceeds half
-        of self.number has only one chance to be part of
-        a sum combination, which is that it is equal to
-        self.number. This special case is treated at the
-        end.
+        to largest. The special case of self.number being
+        a Fibonacci number itself is treated at the end.
 
         The function breaks down the problem into solving
         it for self.number minus the current Fibonacci
@@ -392,15 +393,24 @@ class FibonacciSums():
         adds the singleton [self.number] to the list of
         sums in that case.
 
-        It then saves the number and combinations in the
-        database for future use.
+        We then call remove_duplicates to remove any
+        duplicate dictionaries, which is bound to happen
+        since various sub solutions will overlap.
+
+        It finally saves the number and combinations in the
+        database for future use, and returns self.sums.
         """
         if self.number == 0 or self.number == 1:
-            return [{}]
+            self.sums = [{}]
+            return self.sums
+        
         if self.number==2:
-            return [{2:1}]
+            self.sums = [{2:1}]
+            return self.sums
+             
         if self.number==3:
-            return [{3:1}]
+            self.sums = [{3:1}]
+            return self.sums 
 
         
         ns = NumbersAndSums.get_object_by_target_num(self.number)
@@ -428,6 +438,7 @@ class FibonacciSums():
 
     def sorting_rule(self,sum_seq,i,max_val):
         """
+        OUTDATED, FROM V0.1 ---
         Returns a number that will be used as
         a lambda function sorting key in
         adjust_result().
@@ -448,20 +459,31 @@ class FibonacciSums():
             return sum_seq[i]
 
     def sorting_rule2(self,dd,key):
+        """
+        Returns a tuple representing a key
+        and minus its corresponding value in
+        a dictionary. If the key is not in
+        the dictionary, we return the key
+        with 0 as value.
+        """
         if key not in dd.keys():
-            return (key,self.number)
+            return (key,0) #previously value = self.number
         else:
             return (key,0-dd[key])
 
-    def get_max_len2():
-        pass
-    def adjust_result2(self):
+    def sort(self):
+        """
+        Sorts self.sums from the element with
+        the smallest keys and largest values
+        of those keys, to the largest keys.
+        """
         self.sums = sorted(self.sums,key=lambda x:(tuple(self.sorting_rule2(x,key) for key in self.fibo_sequence)))
         return self.sums
 
 
     def get_max_len(self,res):
         """
+        OUTDATED, FROM V0.1 ---
         Returns the largest length in a list of
         lists of numbers.
         """
@@ -469,6 +491,7 @@ class FibonacciSums():
 
     def get_max_val(self,res):
         """
+        OUTDATED, FROM V0.1 ---
         Returns the largest value in a list of
         lists of numbers.
         """
@@ -476,6 +499,7 @@ class FibonacciSums():
 
     def adjust_result(self,res):
         """
+        OUTDATED, FROM V0.1 ---
         Returns an adjusted self.sums whereby the
         lists and the numbers within each list of
         self.sums are sorted according the value
